@@ -1,0 +1,6 @@
+{
+  "name": "CSU Institutional Terminal",
+  "description": "CSU (Chasing light) decentralized token terminal on Base L2, featuring real-time market metrics, Uniswap v4 pool liquidity, and contract specifications for 0xdC6F5f0AcccD712416E8e377491F24A370261b07.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
