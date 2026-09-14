@@ -1,8 +1,19 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { Timeframe, CandleData, OHLCData } from '../types';
 import { TIMEFRAME_DATA } from '../data/mockData';
 import { Translations } from '../i18n/translations';
 import { formatTokenPrice } from '../utils/formatters';
+import { fetchKlineData } from '../services/klineService';
+
+const BINANCE_SYMBOL_MAP: Record<string, string> = {
+  '15m': 'BTCUSDT',
+  '1H':  'BTCUSDT',
+  '4H':  'BTCUSDT',
+  '1D':  'BTCUSDT',
+  '1W':  'BTCUSDT',
+};
+
+const REFRESH_INTERVAL_MS = 60_000; // 60 seconds
 
 interface CandlestickChartProps {
   currentPrice: number;
@@ -20,13 +31,45 @@ export const CandlestickChart: React.FC<CandlestickChartProps> = ({
   const [selectedTimeframe, setSelectedTimeframe] = useState<Timeframe>('4H');
   const [hoveredCandle, setHoveredCandle] = useState<CandleData | null>(null);
   const [crosshairPos, setCrosshairPos] = useState<{ x: number; y: number } | null>(null);
+  const [klineData, setKlineData] = useState<CandleData[]>([]);
+  const [isLoadingKline, setIsLoadingKline] = useState(false);
+  const [klineError, setKlineError] = useState(false);
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
 
   const currentDataset = TIMEFRAME_DATA[selectedTimeframe] || TIMEFRAME_DATA['4H'];
-  const candles = currentDataset.candles;
+  const candles = klineData.length > 0 ? klineData : currentDataset.candles;
+
+  const loadKline = useCallback(async (tf: Timeframe) => {
+    setIsLoadingKline(true);
+    setKlineError(false);
+    try {
+      const data = await fetchKlineData(BINANCE_SYMBOL_MAP[tf], tf);
+      setKlineData(data);
+      if (data.length === 0) setKlineError(true);
+    } catch {
+      setKlineError(true);
+      setKlineData([]);
+    } finally {
+      setIsLoadingKline(false);
+    }
+  }, []);
+
+  // Load on mount and on timeframe change
+  useEffect(() => {
+    loadKline(selectedTimeframe);
+  }, [selectedTimeframe, loadKline]);
+
+  // Auto-refresh every 60 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      loadKline(selectedTimeframe);
+    }, REFRESH_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [selectedTimeframe, loadKline]);
 
   const handleTimeframeSelect = (tf: Timeframe) => {
     setSelectedTimeframe(tf);
+    setKlineData([]);
     if (onTimeframeChange) {
       onTimeframeChange(tf);
     }
@@ -61,10 +104,6 @@ export const CandlestickChart: React.FC<CandlestickChartProps> = ({
     const max = Math.max(...candles.map((c) => c.high));
     const range = max - min || 0.00000001;
 
-    // SVG coordinates:
-    // Width available for candles is from X=20 to X=730 (width 710)
-    // Candle body & wicks occupy Y from 25 to 220 (height 195)
-    // Volume bars occupy Y from 230 to 275 (height 45)
     const candleWidth = Math.max(6, Math.min(16, 710 / candles.length - 4));
     const step = 710 / candles.length;
 
@@ -101,7 +140,6 @@ export const CandlestickChart: React.FC<CandlestickChartProps> = ({
 
     candles.forEach((c, idx) => {
       const cx = 20 + idx * step + step / 2;
-      // Simple moving averages
       const start5 = Math.max(0, idx - 4);
       const slice5 = candles.slice(start5, idx + 1);
       const avg5 = slice5.reduce((sum, item) => sum + item.close, 0) / slice5.length;
@@ -164,8 +202,11 @@ export const CandlestickChart: React.FC<CandlestickChartProps> = ({
               CSU/USDC
             </span>
             <span className="px-1.5 py-0.5 bg-[#eef2ff] text-[#0052ff] font-mono-num text-[10px] font-semibold rounded-[2px] uppercase">
-              Uniswap v4 (Base)
+              Binance Live
             </span>
+            {isLoadingKline && (
+              <span className="font-mono-num text-[10px] text-[#77767b] animate-pulse">加载中...</span>
+            )}
           </div>
 
           <div className="flex items-baseline gap-2">
