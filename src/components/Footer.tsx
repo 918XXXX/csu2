@@ -64,7 +64,7 @@ export const Footer: React.FC<FooterProps> = ({
           </a>
           <span className="text-[#c8c5cb]">/</span>
           <a
-            href="https://telegram.org"
+            href="https://t.me/CSUChasinglight"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-black transition-colors duration-150"
