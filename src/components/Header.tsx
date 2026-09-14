@@ -69,9 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => handleNavClick('overview')}
             className="flex items-center gap-2.5 text-left group transition-transform duration-150"
           >
-            <div className="w-6 h-6 bg-black flex items-center justify-center rounded-[2px] transition-transform duration-200 group-hover:scale-95 shadow-sm">
-              <div className="w-2 h-2 bg-white rotate-45"></div>
-            </div>
+            <img src="/csu.jpg" alt="CSU Logo" className="w-6 h-6 object-contain rounded-[2px] transition-transform duration-200 group-hover:scale-95 shadow-sm" />
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="font-sans text-[17px] font-bold tracking-tight text-black leading-none">
