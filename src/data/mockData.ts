@@ -26,6 +26,39 @@ export const INITIAL_METRICS: TokenMetrics = {
 
 export const ANNOUNCEMENTS: Announcement[] = [
   {
+    id: 'ann-governance-001',
+    category: 'governance',
+    categoryLabel: 'Governance',
+    timestamp: '2026-09-14 08:00:00 UTC',
+    title: 'CSU Terminal Launch & Community Update',
+    summary:
+      'The official CSU terminal has been updated and community channels are now live. A major milestone has been achieved in the journey from 0 to 0.5.',
+    content: `### CSU Terminal Launch & Community Update
+
+Hello, dear community members!
+
+I am thrilled to announce that the CSU official terminal has been fully updated and our community channels are now officially open. This marks a significant milestone in our journey — from zero to 0.5 — a giant leap forward.
+
+**What has been accomplished:**
+
+- Brand new CSU Institutional Terminal deployed on Base L2
+- Community Telegram channel live: https://t.me/CSUChasinglight
+- Real-time K-line data powered by Binance API
+- Multi-language support across 7 major languages
+- Full Web3 wallet integration (MetaMask, OKX, Coinbase Wallet)
+
+This is my small step, but it is a giant leap for Web4. Your support means everything to me, and I will continue to push forward with more updates, more features, and more community initiatives.
+
+Stay tuned for what is coming next.
+
+**Thank you for being part of this journey.**
+
+— CSU Foundation`,
+    statusBadge: 'Governance',
+    isPinned: true,
+  },
+
+  {
     id: 'base-launch',
     category: 'upgrade',
     categoryLabel: 'Network Launch',
